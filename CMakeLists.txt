@@ -7,10 +7,19 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glfw-3.3/)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glm/)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/)
 
+set(VERTEX_SHADERS
+	shader/test.vs
+)
+
+set(FRAGMENT_SHADERS
+	shader/test.fs
+)
+
 set(HEADER_FILES
 	include/Converter.h
 	include/Coordinate.h
 	include/MercatorMath.h
+	include/Shader.h
 	include/Sphere.h
 	include/Utilities.h
 )
@@ -20,6 +29,7 @@ set(SOURCE_FILES
 	src/Coordinate.cpp
 	src/MercatorMath.cpp
 	src/main.cpp
+	src/Shader.cpp
 	src/Sphere.cpp
 	src/Utilities.cpp
 )
@@ -27,6 +37,8 @@ set(SOURCE_FILES
 add_executable(${PROJECT_NAME}
 			   ${HEADER_FILES}
 			   ${SOURCE_FILES}
+			   ${VERTEX_SHADERS}
+			   ${FRAGMENT_SHADERS}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -42,6 +54,7 @@ target_link_libraries(${PROJECT_NAME}
 					  ${CMAKE_CURRENT_LIST_DIR}/out/thirdparty/glad/$<CONFIG>/glad.lib
 )
 
+source_group("shaders" FILES ${VERTEX_SHADERS} ${FRAGMENT_SHADERS})
 				
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
