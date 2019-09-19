@@ -20,12 +20,60 @@ void framebuffer_size_callback(GLFWwindow* window, const int width, const int he
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, float& mixer)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		mixer += 0.01f;
+
+		if (mixer > 1.0f)
+		{
+			mixer = 1.0f;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		mixer -= 0.01f;
+
+		if (mixer < 0.0f)
+		{
+			mixer = 0.0f;
+		}
+	}
+}
+
+GLuint loadTexture(const std::string& name, const int format)
+{
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(getTexturePath(name).string().c_str(), &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(texture);
+	}
+	else
+	{
+		std::cout << "Failed to load texture...\n";
+		return 0;
+	}
+
+	stbi_image_free(data);
+
+	return texture;
 }
 
 int main()
@@ -56,6 +104,10 @@ int main()
 	}
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+
+	stbi_set_flip_vertically_on_load(true);
+
 
 	float vertices[] = {
 		// positions          // colors           // texture coords
@@ -92,43 +144,31 @@ int main()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	
-	glUseProgram(sh.getID());
+	const GLuint texture1 = loadTexture("container.jpg", GL_RGB);
+	const GLuint texture2 = loadTexture("wall.jpg", GL_RGB);
+	const GLuint texture3 = loadTexture("awesomeface.png", GL_RGBA);
 
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(getTexturePath("wall.jpg").string().c_str(), &width, &height, &nrChannels, 0);
+	sh.use();
+	sh.setInt("texture2", 1);
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(texture);
-	}
-	else
-	{
-		std::cout << "Failed to load texture...\n";
-		return 0;
-	}
-
-	stbi_image_free(data);
+	float mixerFloat = 0.0f;
 
 	while (!glfwWindowShouldClose(window))
 	{
-		processInput(window);
+		processInput(window, mixerFloat);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture3);
+
+		sh.setFloat("mixerFloat", mixerFloat);
 		
-		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
