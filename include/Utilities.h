@@ -13,3 +13,6 @@ inline std::ostream& operator<<(std::ostream& out, const glm::vec3& v)
 
 std::filesystem::path getShaderFolderPath();
 std::filesystem::path getShaderPath(const std::string& shaderName);
+
+std::filesystem::path getTextureFolderPath();
+std::filesystem::path getTexturePath(const std::string& textureName);

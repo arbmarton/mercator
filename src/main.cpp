@@ -5,6 +5,8 @@
 #include "Utilities.h"
 #include "Shader.h"
 
+#include "stb_image.h"
+
 #include "glm.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -57,13 +59,13 @@ int main()
 
 	float vertices[] = {
 		// positions         // colors
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+		 0.0f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+		 0.0f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+		 0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 	};
 
 	unsigned int indices[] = {  // note that we start from 0!
-		0, 2, 1   // first triangle
+		0, 1, 2   // first triangle
 	};
 
 	
@@ -88,9 +90,40 @@ int main()
 
 	glUseProgram(sh.getID());
 
+	auto a = getTexturePath("wall.jpg").string();
+
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(getTexturePath("wall.jpg").string().c_str(), &width, &height, &nrChannels, 0);
+
+	const float fullWidth = 0.5f;
+	const float fullHeight = 0.5f;
+
+	float currentX = 0.0f;
+	float currentY = 0.0f;
+
+	float xAdd = 0.015f;
+	float yAdd = 0.01f;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
+
+		currentX += xAdd;
+		currentY += yAdd;
+
+		if (currentX + fullWidth > 1 || currentX < -1)
+		{
+			xAdd *= -1;
+		}
+
+		if (currentY + fullHeight > 1 || currentY < -1)
+		{
+			yAdd *= -1;
+		}
+
+		sh.setFloat("xOffset", currentX);
+		sh.setFloat("yOffset", currentY);
+		//sh.setFloat("xOffset", float(sin(glfwGetTime()) / 2 + 0.5f));
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
