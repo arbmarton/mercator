@@ -58,14 +58,16 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	float vertices[] = {
-		// positions         // colors
-		 0.0f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-		 0.0f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-		 0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 	};
 
 	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 2   // first triangle
+		0, 1, 3,   // first triangle
+		1, 2, 3
 	};
 
 	
@@ -83,53 +85,50 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
+	
 	glUseProgram(sh.getID());
 
-	auto a = getTexturePath("wall.jpg").string();
-
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load(getTexturePath("wall.jpg").string().c_str(), &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(getTexturePath("wall.jpg").string().c_str(), &width, &height, &nrChannels, 0);
 
-	const float fullWidth = 0.5f;
-	const float fullHeight = 0.5f;
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	float currentX = 0.0f;
-	float currentY = 0.0f;
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(texture);
+	}
+	else
+	{
+		std::cout << "Failed to load texture...\n";
+		return 0;
+	}
 
-	float xAdd = 0.015f;
-	float yAdd = 0.01f;
+	stbi_image_free(data);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
-		currentX += xAdd;
-		currentY += yAdd;
-
-		if (currentX + fullWidth > 1 || currentX < -1)
-		{
-			xAdd *= -1;
-		}
-
-		if (currentY + fullHeight > 1 || currentY < -1)
-		{
-			yAdd *= -1;
-		}
-
-		sh.setFloat("xOffset", currentX);
-		sh.setFloat("yOffset", currentY);
-		//sh.setFloat("xOffset", float(sin(glfwGetTime()) / 2 + 0.5f));
-
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
