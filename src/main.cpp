@@ -78,14 +78,14 @@ GLuint loadTexture(const std::string& name, const int format)
 	return texture;
 }
 
-glm::mat4 createModelMatrix()
+glm::mat4 createModelMatrix(const glm::vec3& trans, const float rotation, const glm::vec3& rotationAxis)
 {
-	return glm::rotate(glm::mat4(1.0f), float(glfwGetTime()) * glm::radians(-55.0f), glm::vec3(1, 0, 0));
+	return glm::rotate(glm::translate(glm::mat4(1.0f), trans), rotation, rotationAxis);
 }
 
-glm::mat4 createViewMatrix()
+glm::mat4 createViewMatrix(const glm::vec3& v)
 {
-	return glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -3.0f));
+	return glm::translate(glm::mat4(1.0f), v);
 }
 
 glm::mat4 createProjectionMatrix(const int wid, const int hei)
@@ -170,6 +170,19 @@ int main()
 		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3
@@ -212,21 +225,29 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		sh.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-		sh.setMat4("view", createViewMatrix());
-		sh.setMat4("model", createModelMatrix());
+		for (const glm::vec3& v : cubePositions)
+		{
+			sh.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+			sh.setMat4("view", createViewMatrix({ 0, 0, -5 }));
+			sh.setMat4("model", createModelMatrix(v, float(glfwGetTime()) * glm::radians(-55.0f), { 0,1,0 }));
+
+			glBindVertexArray(VAO);
+			glBindTexture(GL_TEXTURE_2D, texture1);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glBindVertexArray(0);
+		}
 
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
 		//glBindTexture(GL_TEXTURE_2D, texture3);
 		//glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		
 
-		glBindVertexArray(VAO);
+		
 		//glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 
-		glBindVertexArray(0);
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
