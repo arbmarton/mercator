@@ -8,6 +8,8 @@
 #include "stb_image.h"
 
 #include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -26,7 +28,7 @@ void processInput(GLFWwindow* window, float& mixer)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
 		mixer += 0.01f;
 
@@ -35,7 +37,7 @@ void processInput(GLFWwindow* window, float& mixer)
 			mixer = 1.0f;
 		}
 	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
 		mixer -= 0.01f;
 
@@ -149,26 +151,45 @@ int main()
 	const GLuint texture3 = loadTexture("awesomeface.png", GL_RGBA);
 
 	sh.use();
-	sh.setInt("texture2", 1);
 
 	float mixerFloat = 0.0f;
 
+	unsigned int inc = 0;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window, mixerFloat);
 
+		glm::mat4 trans(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.5, 0.5, 0));
+		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0));
+		trans = glm::rotate(trans, glm::radians(float(inc++)), glm::vec3(0, 0, 1));
+		
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture3);
+		// bind textures on corresponding texture units
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture3);
+		//glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		sh.setFloat("mixerFloat", mixerFloat);
+		sh.setMat4("transform", trans);
 		
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
+		
+
+
+		glm::mat4 trans2(1.0f);
+		trans2 = glm::translate(trans2, glm::vec3(-0.5, -0.5, 0));
+		trans2 = glm::scale(trans2, glm::vec3(0.5, 0.5, 0));
+		trans2 = glm::rotate(trans2, glm::radians(float(inc++)) * -1, glm::vec3(0, 0, 1));
+
+		sh.setMat4("transform", trans2);
+		glBindTexture(GL_TEXTURE_2D, texture3);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
+
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
