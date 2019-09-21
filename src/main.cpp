@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "Utilities.h"
 #include "Shader.h"
+#include "Camera.h"
 
 #include "stb_image.h"
 
@@ -17,35 +18,55 @@
 #include <iostream>
 
 
+bool firstMouse = true;
+Camera camera;
+
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window, float& mixer)
+void processInput(GLFWwindow* window, Camera& cam)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		mixer += 0.01f;
-
-		if (mixer > 1.0f)
-		{
-			mixer = 1.0f;
-		}
+		cam.moveForward();
 	}
-	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		mixer -= 0.01f;
-
-		if (mixer < 0.0f)
-		{
-			mixer = 0.0f;
-		}
+		cam.moveBackward();
 	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		cam.moveLeft();
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		cam.moveRight();
+	}
+}
+
+void mouse_callback(GLFWwindow* window, const double xpos, const double ypos)
+{
+	if (firstMouse)
+	{
+		CursorPosDescriptor::instance().lastX = float(xpos);
+		CursorPosDescriptor::instance().lastY = float(ypos);
+
+		firstMouse = false;
+	}
+
+	const float xOffset = float(xpos) - CursorPosDescriptor::instance().lastX;
+	const float yOffset = CursorPosDescriptor::instance().lastY - float(ypos);
+	CursorPosDescriptor::instance().lastX = float(xpos);
+	CursorPosDescriptor::instance().lastY = float(ypos);
+
+
+	camera.processMovement(xOffset, yOffset);
 }
 
 GLuint loadTexture(const std::string& name, const int format)
@@ -98,11 +119,14 @@ int main()
 	constexpr int WINDOW_WIDTH = 800;
 	constexpr int WINDOW_HEIGHT = 600;
 
+	CursorPosDescriptor::instance().lastX = WINDOW_WIDTH / 2;
+	CursorPosDescriptor::instance().lastY = WINDOW_HEIGHT / 2;
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Test", nullptr, nullptr);
 	if (window == nullptr)
 	{
@@ -111,8 +135,7 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-
-	
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -121,7 +144,7 @@ int main()
 	}
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -188,10 +211,9 @@ int main()
 		1, 2, 3
 	};
 
-	
 	Shader sh(getShaderPath("test.vs"), getShaderPath("test.fs"));
 
-	GLuint VBO, VAO, EBO;
+	GLuint VBO, VAO;// , EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	//glGenBuffers(1, &EBO);
@@ -208,19 +230,25 @@ int main()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	glEnable(GL_DEPTH_TEST);
+
 	const GLuint texture1 = loadTexture("container.jpg", GL_RGB);
 	const GLuint texture2 = loadTexture("wall.jpg", GL_RGB);
 	const GLuint texture3 = loadTexture("awesomeface.png", GL_RGBA);
 
 	sh.use();
 
-	float mixerFloat = 0.0f;
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
 
-	unsigned int inc = 0;
-	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
-		processInput(window, mixerFloat);
+		const float currentFrame = float(glfwGetTime());
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		camera.setSpeed(deltaTime * 2.5f);
+		processInput(window, camera);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -228,8 +256,8 @@ int main()
 		for (const glm::vec3& v : cubePositions)
 		{
 			sh.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-			sh.setMat4("view", createViewMatrix({ 0, 0, -5 }));
-			sh.setMat4("model", createModelMatrix(v, float(glfwGetTime()) * glm::radians(-55.0f), { 0,1,0 }));
+			sh.setMat4("view", camera.getLookAt());
+			sh.setMat4("model", createModelMatrix(v, float(glfwGetTime()) * glm::radians(-55.0f), { 1,0,0 }));
 
 			glBindVertexArray(VAO);
 			glBindTexture(GL_TEXTURE_2D, texture1);

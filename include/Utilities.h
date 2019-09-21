@@ -11,6 +11,27 @@ inline std::ostream& operator<<(std::ostream& out, const glm::vec3& v)
 	return out;
 }
 
+struct CursorPosDescriptor
+{
+	float lastX;
+	float lastY;
+
+	static CursorPosDescriptor& instance()
+	{
+		static CursorPosDescriptor* ptr{ nullptr };
+
+		if (!ptr)
+		{
+			ptr = new CursorPosDescriptor();
+		}
+
+		return *ptr;
+	}
+
+private:
+	CursorPosDescriptor() = default;
+};
+
 std::filesystem::path getShaderFolderPath();
 std::filesystem::path getShaderPath(const std::string& shaderName);
 

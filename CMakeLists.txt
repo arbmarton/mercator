@@ -22,6 +22,7 @@ set(THIRDPARTY_HEADERS
 )
 
 set(HEADER_FILES
+	include/Camera.h
 	include/Converter.h
 	include/Coordinate.h
 	include/MercatorMath.h
@@ -31,6 +32,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+	src/Camera.cpp
 	src/Converter.cpp
 	src/Coordinate.cpp
 	src/MercatorMath.cpp
