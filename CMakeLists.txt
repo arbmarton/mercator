@@ -10,10 +10,14 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glm/)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/)
 
 set(VERTEX_SHADERS
+	shader/lamp.vs
+	shader/lighting.vs
 	shader/test.vs
 )
 
 set(FRAGMENT_SHADERS
+	shader/lamp.fs
+	shader/lighting.fs
 	shader/test.fs
 )
 
