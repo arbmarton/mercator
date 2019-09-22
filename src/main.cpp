@@ -261,7 +261,7 @@ int main()
 	//test.use();
 
 	const glm::vec3 lampColor{ 1, 1, 1 };
-	const glm::vec3 lampPos{ 0, 0, -5 };
+	glm::vec3 lampPos = { 0, 0, -5 };
 
 	lampShader.use();
 	lampShader.setVec3("lampColor", lampColor);
@@ -269,8 +269,6 @@ int main()
 	litShader.use();
 	litShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
 	litShader.setVec3("lightColor", lampColor);
-	litShader.setVec3("lightPos", lampPos);
-
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -280,6 +278,9 @@ int main()
 		const float currentFrame = float(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		lampPos.z = -5 + 5* float(sin(glfwGetTime()));
+		litShader.setVec3("lightPos", lampPos);
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);
@@ -302,7 +303,8 @@ int main()
 
 			litShader.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()));
 			litShader.setMat4("view", camera.getLookAt());
-			litShader.setMat4("model", createModelMatrix(v, float(glfwGetTime()) * glm::radians(-55.0f), { 1, 0, 0 }));
+			litShader.setMat4("model", createModelMatrix(v, glm::radians(-55.0f), { 1, 0, 0 }));
+			litShader.setVec3("viewPos", camera.getPosition());
 
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
