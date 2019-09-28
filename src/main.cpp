@@ -5,6 +5,7 @@
 #include "Utilities.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "UVSphere.h"
 
 #include "stb_image.h"
 
@@ -257,6 +258,9 @@ int main()
 	//const GLuint texture1 = loadTexture("container.jpg", GL_RGB);
 	//const GLuint texture2 = loadTexture("wall.jpg", GL_RGB);
 	//const GLuint texture3 = loadTexture("awesomeface.png", GL_RGBA);
+	const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
+
+	UVSphere uvsphere(1, { 0,0,0 }, 100, 100);
 
 	//test.use();
 
@@ -297,19 +301,27 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 
-		for (const glm::vec3& v : cubePositions)
-		{
-			litShader.use();
+		//for (const glm::vec3& v : cubePositions)
+		//{
+		//	litShader.use();
 
-			litShader.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()));
-			litShader.setMat4("view", camera.getLookAt());
-			litShader.setMat4("model", createModelMatrix(v, glm::radians(-55.0f), { 1, 0, 0 }));
-			litShader.setVec3("viewPos", camera.getPosition());
+		//	litShader.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()));
+		//	litShader.setMat4("view", camera.getLookAt());
+		//	litShader.setMat4("model", createModelMatrix(v, glm::radians(-55.0f), { 1, 0, 0 }));
+		//	litShader.setVec3("viewPos", camera.getPosition());
 
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glBindVertexArray(0);
-		}
+		//	glBindVertexArray(VAO);
+		//	glDrawArrays(GL_TRIANGLES, 0, 36);
+		//	glBindVertexArray(0);
+		//}
+
+		uvsphere.draw(
+			glm::rotate(glm::translate(glm::mat4(1.0f), uvsphere.getPosition()), glm::radians(-90.0f), { 1,0,0 }),
+			camera.getLookAt(),
+			createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()),
+			camera.getPosition(),
+			earthTexture
+		);
 
 		// bind textures on corresponding texture units
 		//glActiveTexture(GL_TEXTURE0);
