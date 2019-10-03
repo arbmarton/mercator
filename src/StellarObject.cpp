@@ -22,6 +22,11 @@ StellarObject::~StellarObject()
 	delete shader;
 }
 
+float StellarObject::getRadius() const
+{
+	return sphere->getRadius();
+}
+
 void StellarObject::draw(const Camera& camera, const glm::vec3& lightColor, const glm::vec3& lightPos) const
 {
 	glUseProgram(shader->getID());
@@ -31,7 +36,7 @@ void StellarObject::draw(const Camera& camera, const glm::vec3& lightColor, cons
 
 	shader->setMat4("model", rotation * glm::translate(glm::mat4(1.0f), position));
 	shader->setMat4("view", camera.getLookAt());
-	shader->setMat4("projection", glm::perspective(glm::radians(camera.getFov()), ScreenDescriptor::WINDOW_WIDTH / float(ScreenDescriptor::WINDOW_HEIGHT), 0.1f, 100.0f));
+	shader->setMat4("projection", glm::perspective(glm::radians(camera.getFov()), ScreenDescriptor::WINDOW_WIDTH / float(ScreenDescriptor::WINDOW_HEIGHT), 0.1f, 1000.0f));
 	shader->setVec3("viewPos", camera.getPosition());
 	shader->setVec3("lightColor", lightColor);
 	shader->setVec3("lightPos", lightPos);

@@ -91,23 +91,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	}
 }
 
-
-
-glm::mat4 createModelMatrix(const glm::vec3& trans, const float rotation, const glm::vec3& rotationAxis)
-{
-	return glm::rotate(glm::translate(glm::mat4(1.0f), trans), rotation, rotationAxis);
-}
-
-glm::mat4 createViewMatrix(const glm::vec3& v)
-{
-	return glm::translate(glm::mat4(1.0f), v);
-}
-
-glm::mat4 createProjectionMatrix(const int wid, const int hei, const float fov)
-{
-	return glm::perspective(glm::radians(fov), wid / float(hei), 0.1f, 100.0f);
-}
-
 int main()
 {
 	CursorPosDescriptor::instance().lastX = ScreenDescriptor::WINDOW_WIDTH / 2;
@@ -138,120 +121,41 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	Shader lampShader(getShaderPath("lamp.vs"), getShaderPath("lamp.fs"));
-	
-	GLuint VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-
-	GLuint lampVAO;
-	glGenVertexArrays(1, &lampVAO);
-	glBindVertexArray(lampVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
-	glEnableVertexAttribArray(0);
-
 	glEnable(GL_DEPTH_TEST);
 
 	DisplayMap map;
 	
-	StellarObject earthObject = StellarObject({ 0,0,0 }, 1, "sphere", "earth2048.bmp", GL_RGB, false);
-	StellarObject sunObject = StellarObject({ 0,0,0 }, 1, "sphere", "2k_sun.jpg", GL_RGB, true);
+	StellarObject earthObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "earth2048.bmp", GL_RGB, false);
+	StellarObject sunObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "2k_sun.jpg", GL_RGB, true);
 
-	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(-23.5f), { 0,0,1 });
+	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(/*-23.5f*/ 0.0f), { 0,0,1 });
 
-	const glm::vec3 lampColor{ 1,1,1 };
+	const glm::vec3 lightColor{ 1,1,1 };
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 
 	while (!glfwWindowShouldClose(window))
 	{
+		// Update
 		const float currentFrame = float(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		sunObject.getPosition() = { 50 * float(cos(glfwGetTime() * 0.1f)), 0, 50 * float(sin(glfwGetTime() * 0.1f)) };
+		sunObject.getPosition() = { 50 * float(cos(glfwGetTime())), 0, 50 * float(sin(glfwGetTime())) };
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);
 
+		// Draw
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		map.draw();
-		sunObject.draw(camera, lampColor, sunObject.getPosition());
-		earthObject.draw(camera, lampColor, sunObject.getPosition());
+		map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition());
+		sunObject.draw(camera, lightColor, sunObject.getPosition());
+		earthObject.draw(camera, lightColor, sunObject.getPosition());
 
+		// Upkeep
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

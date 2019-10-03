@@ -1,6 +1,7 @@
 #include "DisplayMap.h"
 
 #include "Shader.h"
+#include "Utilities.h"
 
 DisplayMap::DisplayMap()
 	: shader(new Shader(getShaderPath("displaymap.vs"), getShaderPath("displaymap.fs")))
@@ -22,12 +23,20 @@ DisplayMap::DisplayMap()
 	glEnableVertexAttribArray(1);
 }
 
-void DisplayMap::draw() const
+void DisplayMap::draw(const float earthRadius, const glm::vec3& earthToSun) const
 {
+	glUseProgram(shader->getID());
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, earthTexture);
 
-	glUseProgram(shader->getID());
+	constexpr float x = ScreenDescriptor::WINDOW_WIDTH / 2 + topLeftX * ScreenDescriptor::WINDOW_WIDTH / 2;
+	constexpr float y = ScreenDescriptor::WINDOW_HEIGHT / 2 + topLeftY * ScreenDescriptor::WINDOW_HEIGHT/ 2;
+
+	shader->setVec2("upperLeftScreen", { x, y });
+	shader->setVec3("earthToSun", earthToSun);
+	shader->setFloat("earthRadius", earthRadius);
+
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, sizeof(displayIndices) / 3, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

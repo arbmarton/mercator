@@ -27,6 +27,11 @@ public:
 		return shader;
 	}
 
+	float getRadius() const
+	{
+		return radius;
+	}
+
 private:
 	const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
 

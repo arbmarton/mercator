@@ -27,6 +27,8 @@ public:
 		return position;
 	}
 
+	float getRadius() const;
+
 	void draw(const Camera& camera, const glm::vec3& lightColor, const glm::vec3& lightPos) const;
 
 private:
