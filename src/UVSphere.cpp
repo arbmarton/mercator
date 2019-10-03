@@ -8,41 +8,7 @@ UVSphere::UVSphere(const float radiusArg, const glm::vec3& positionArg, const ui
 	: radius(radiusArg)
 	, position(positionArg)
 {
-	//positions.resize((latitudeDivision + 1) * (longitudeDivision + 1));
-	normals.resize((latitudeDivision + 1) * (longitudeDivision + 1));
-	texcoords.resize((latitudeDivision + 1) * (longitudeDivision + 1));
-	indices.resize(latitudeDivision * longitudeDivision * 6);
-
-	//const float radiusInverse = 1.0f / radius;
-
-	uint32_t curr{ 0 };
-	//for (uint32_t lon = 0; lon <= longitudeDivision; ++lon)
-	//{
-	//	const float u = float(lon) / float(longitudeDivision);
-	//	const float currentLongitude = u * glm::pi<float>() * 2;
-
-	//	const float sinLongitude = sinf(currentLongitude);
-	//	const float cosLongitude = cosf(currentLongitude);
-
-	//	for (uint32_t lat = 0; lat <= latitudeDivision; ++lat)
-	//	{
-	//		const float v = float(lat) / float(latitudeDivision);
-	//		const float currentLatitude = (v - 0.5f) * glm::pi<float>();
-
-	//		const float sinLatitude = sinf(currentLatitude);
-	//		const float cosLatitude = cosf(currentLatitude);
-
-	//		const float pos_x = cosLongitude * cosLatitude /** radius*/;
-	//		const float pos_y = sinLatitude /** radius*/;
-	//		const float pos_z = sinLongitude * cosLatitude /** radius*/;
-
-	//		positions[curr] = glm::vec3{ pos_x, -pos_z, pos_y } /** radius*/;
-	//		texcoords[curr] = { u,v };
-	//		normals[curr] = positions[curr] /** radiusInverse*/;
-
-	//		curr++;
-	//	}
-	//}
+	const float radiusInverse = 1.0f / radius;
 
 	for (uint32_t y = 0; y <= latitudeDivision; ++y)
 	{
@@ -59,28 +25,23 @@ UVSphere::UVSphere(const float radiusArg, const glm::vec3& positionArg, const ui
 			const float sin_phi = sinf(phi);
 			const float cos_phi = cosf(phi);
 
-			const float ux = cos_theta * cos_phi;
-			const float uy = sin_phi;
-			const float uz = cos_phi * sin_theta;
+			const float ux = cos_theta * cos_phi * radius;
+			const float uy = sin_phi * radius;
+			const float uz = cos_phi * sin_theta * radius;
 
-			//positions[curr] = { ux, -uz, uy };
-			//texcoords[curr] = { u,v };
-			//normals[curr] = positions[curr];
-
-			positions2.push_back(ux);
-			positions2.push_back(-uz);
-			positions2.push_back(uy);
-			positions2.push_back(ux);
-			positions2.push_back(-uz);
-			positions2.push_back(uy);
-			positions2.push_back(-u);
-			positions2.push_back(v);
-
-			curr++;
+			vertexData.push_back(ux);
+			vertexData.push_back(uy);
+			vertexData.push_back(uz);
+			vertexData.push_back(ux * radiusInverse);
+			vertexData.push_back(uy * radiusInverse);
+			vertexData.push_back(uz * radiusInverse);
+			vertexData.push_back(-u);
+			vertexData.push_back(v);
 		}
 	}
 
-	curr = 0;
+	uint32_t curr{ 0 };
+	indices.resize(latitudeDivision * longitudeDivision * 6);
 	for (uint32_t lon = 0; lon < longitudeDivision; ++lon)
 	{
 		for (uint32_t lat = 0; lat < latitudeDivision; ++lat)
@@ -101,8 +62,7 @@ UVSphere::UVSphere(const float radiusArg, const glm::vec3& positionArg, const ui
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), &positions[0], GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, positions2.size() * sizeof(float), &positions2[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), &indices[0], GL_STATIC_DRAW);
@@ -122,19 +82,21 @@ UVSphere::~UVSphere()
 	delete shader;
 }
 
-void UVSphere::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& viewPos, const GLuint texture) const
+void UVSphere::draw(/*const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& viewPos, const glm::vec3& lightColor, const glm::vec3& lightPos*/) const
 {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	//glUseProgram(shader->getID());
 
-	glUseProgram(shader->getID());
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, earthTexture);
 
-	shader->setMat4("model", model);
-	shader->setMat4("view", view);
-	shader->setMat4("projection", projection);
-	shader->setVec3("viewPos", viewPos);
+	//shader->setMat4("model", model);
+	//shader->setMat4("view", view);
+	//shader->setMat4("projection", projection);
+	//shader->setVec3("viewPos", viewPos);
+	//shader->setVec3("lightColor", lightColor);
+	//shader->setVec3("lightPos", lightPos);
 
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, GLsizei(positions2.size()), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, GLsizei(vertexData.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

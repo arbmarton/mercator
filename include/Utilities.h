@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm.hpp"
+#include <glad/glad.h>
 
 #include <iostream>
 #include <filesystem>
@@ -32,8 +33,24 @@ private:
 	CursorPosDescriptor() = default;
 };
 
+struct ScreenDescriptor
+{
+	constexpr static int WINDOW_WIDTH = 800;
+	constexpr static int WINDOW_HEIGHT = 600;
+
+private:
+	ScreenDescriptor() = delete;
+	ScreenDescriptor(const ScreenDescriptor& rhs) = delete;
+	ScreenDescriptor(const ScreenDescriptor&& rhs) = delete;
+
+	ScreenDescriptor& operator=(const ScreenDescriptor& rhs) = delete;
+	ScreenDescriptor& operator=(const ScreenDescriptor&& rhs) = delete;
+};
+
 std::filesystem::path getShaderFolderPath();
 std::filesystem::path getShaderPath(const std::string& shaderName);
 
 std::filesystem::path getTextureFolderPath();
 std::filesystem::path getTexturePath(const std::string& textureName);
+
+GLuint loadTexture(const std::string& name, const int format);

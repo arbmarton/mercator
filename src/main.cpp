@@ -6,6 +6,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "UVSphere.h"
+#include "DisplayMap.h"
+#include "StellarObject.h"
 
 #include "stb_image.h"
 
@@ -33,19 +35,19 @@ void processInput(GLFWwindow* window, Camera& cam)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		cam.moveForward();
 	}
-	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		cam.moveBackward();
 	}
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		cam.moveLeft();
 	}
-	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		cam.moveRight();
 	}
@@ -89,35 +91,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	}
 }
 
-GLuint loadTexture(const std::string& name, const int format)
-{
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(getTexturePath(name).string().c_str(), &width, &height, &nrChannels, 0);
-
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(texture);
-	}
-	else
-	{
-		std::cout << "Failed to load texture...\n";
-		return 0;
-	}
-
-	stbi_image_free(data);
-
-	return texture;
-}
 
 glm::mat4 createModelMatrix(const glm::vec3& trans, const float rotation, const glm::vec3& rotationAxis)
 {
@@ -136,18 +110,15 @@ glm::mat4 createProjectionMatrix(const int wid, const int hei, const float fov)
 
 int main()
 {
-	constexpr int WINDOW_WIDTH = 800;
-	constexpr int WINDOW_HEIGHT = 600;
-
-	CursorPosDescriptor::instance().lastX = WINDOW_WIDTH / 2;
-	CursorPosDescriptor::instance().lastY = WINDOW_HEIGHT / 2;
+	CursorPosDescriptor::instance().lastX = ScreenDescriptor::WINDOW_WIDTH / 2;
+	CursorPosDescriptor::instance().lastY = ScreenDescriptor::WINDOW_HEIGHT / 2;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Test", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(ScreenDescriptor::WINDOW_WIDTH, ScreenDescriptor::WINDOW_HEIGHT, "Lit Earth", nullptr, nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -166,8 +137,6 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
-
-	stbi_set_flip_vertically_on_load(true);
 
 	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -226,8 +195,6 @@ int main()
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	Shader test(getShaderPath("test.vs"), getShaderPath("test.fs"));
-	Shader litShader(getShaderPath("lighting.vs"), getShaderPath("lighting.fs"));
 	Shader lampShader(getShaderPath("lamp.vs"), getShaderPath("lamp.fs"));
 	
 	GLuint VBO, VAO;
@@ -255,24 +222,14 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	//const GLuint texture1 = loadTexture("container.jpg", GL_RGB);
-	//const GLuint texture2 = loadTexture("wall.jpg", GL_RGB);
-	//const GLuint texture3 = loadTexture("awesomeface.png", GL_RGBA);
-	const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
+	DisplayMap map;
+	
+	StellarObject earthObject = StellarObject({ 0,0,0 }, 1, "sphere", "earth2048.bmp", GL_RGB, false);
+	StellarObject sunObject = StellarObject({ 0,0,0 }, 1, "sphere", "2k_sun.jpg", GL_RGB, true);
 
-	UVSphere uvsphere(1, { 0,0,0 }, 100, 100);
+	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(-23.5f), { 0,0,1 });
 
-	//test.use();
-
-	const glm::vec3 lampColor{ 1, 1, 1 };
-	glm::vec3 lampPos = { 0, 0, -5 };
-
-	lampShader.use();
-	lampShader.setVec3("lampColor", lampColor);
-
-	litShader.use();
-	litShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-	litShader.setVec3("lightColor", lampColor);
+	const glm::vec3 lampColor{ 1,1,1 };
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -283,57 +240,17 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		lampPos.z = -5 + 5* float(sin(glfwGetTime()));
-		litShader.setVec3("lightPos", lampPos);
+		sunObject.getPosition() = { 50 * float(cos(glfwGetTime() * 0.1f)), 0, 50 * float(sin(glfwGetTime() * 0.1f)) };
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		lampShader.use();
-		lampShader.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()));
-		lampShader.setMat4("view", camera.getLookAt());
-		lampShader.setMat4("model", glm::scale(createModelMatrix(lampPos, 0, { 1, 0, 0 }), glm::vec3(0.2f)));
-
-		glBindVertexArray(lampVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-
-		//for (const glm::vec3& v : cubePositions)
-		//{
-		//	litShader.use();
-
-		//	litShader.setMat4("projection", createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()));
-		//	litShader.setMat4("view", camera.getLookAt());
-		//	litShader.setMat4("model", createModelMatrix(v, glm::radians(-55.0f), { 1, 0, 0 }));
-		//	litShader.setVec3("viewPos", camera.getPosition());
-
-		//	glBindVertexArray(VAO);
-		//	glDrawArrays(GL_TRIANGLES, 0, 36);
-		//	glBindVertexArray(0);
-		//}
-
-		uvsphere.draw(
-			glm::rotate(glm::translate(glm::mat4(1.0f), uvsphere.getPosition()), glm::radians(-90.0f), { 1,0,0 }),
-			camera.getLookAt(),
-			createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()),
-			camera.getPosition(),
-			earthTexture
-		);
-
-		// bind textures on corresponding texture units
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, texture3);
-		//glActiveTexture(GL_TEXTURE1);
-		
-
-		
-		//glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
-		
-
-		
+		map.draw();
+		sunObject.draw(camera, lampColor, sunObject.getPosition());
+		earthObject.draw(camera, lampColor, sunObject.getPosition());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
