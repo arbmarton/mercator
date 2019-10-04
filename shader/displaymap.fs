@@ -7,6 +7,7 @@ in vec4 gl_FragCoord;
 uniform sampler2D ourTexture;
 uniform vec2 upperLeftScreen;
 uniform vec3 earthToSun;
+uniform mat4 rotation;
 uniform float earthRadius;
 
 uniform float PI = 3.14159265358979323846264338327950f;
@@ -40,16 +41,22 @@ void main()
 	currentY = currentY * PI - PI / 2;
 
 	vec2 euler = projectToSphere(vec2(currentX, currentY));
-	vec3 normal = toDirectionVector(euler);
-	float result = dot(normal, earthToSun);
+	vec4 normal = vec4(toDirectionVector(euler), 1.0f);
+	vec4 rotated = rotation * normal;	// rotate the normals to represent the orientation the earth is in
+	float result = dot(vec3(rotated), earthToSun);
 
-	if (result > 0)
+	if (result < 0)
 	{
-		FragColor = texture(ourTexture, TexCoord);
+		FragColor = texture(ourTexture, TexCoord) * 0.3f;
+	}
+	else if (result < 30f)
+	{
+		float interpolation = (result / 30f) * 0.7f + 0.3f;
+		FragColor = texture(ourTexture, TexCoord) * interpolation;
 	}
 	else
 	{
-		FragColor = texture(ourTexture, TexCoord) * 0.5f;
+		FragColor = texture(ourTexture, TexCoord);
 	}
 	
 }

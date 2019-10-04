@@ -23,7 +23,7 @@ DisplayMap::DisplayMap()
 	glEnableVertexAttribArray(1);
 }
 
-void DisplayMap::draw(const float earthRadius, const glm::vec3& earthToSun) const
+void DisplayMap::draw(const float earthRadius, const glm::vec3& earthToSun, const glm::mat4& earthRotation) const
 {
 	glUseProgram(shader->getID());
 
@@ -36,6 +36,7 @@ void DisplayMap::draw(const float earthRadius, const glm::vec3& earthToSun) cons
 	shader->setVec2("upperLeftScreen", { x, y });
 	shader->setVec3("earthToSun", earthToSun);
 	shader->setFloat("earthRadius", earthRadius);
+	shader->setMat4("rotation", earthRotation);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, sizeof(displayIndices) / 3, GL_UNSIGNED_INT, 0);

@@ -128,7 +128,7 @@ int main()
 	StellarObject earthObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "earth2048.bmp", GL_RGB, false);
 	StellarObject sunObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "2k_sun.jpg", GL_RGB, true);
 
-	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(/*-23.5f*/ 0.0f), { 0,0,1 });
+	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(-23.5f), { 0,0,1 });
 
 	const glm::vec3 lightColor{ 1,1,1 };
 
@@ -142,7 +142,7 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		sunObject.getPosition() = { 50 * float(cos(glfwGetTime())), 0, 50 * float(sin(glfwGetTime())) };
+		sunObject.getPosition() = { 50 * float(cos(glfwGetTime())), 100, 50 * float(sin(glfwGetTime())) };
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);
@@ -151,7 +151,7 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition());
+		map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition(), earthObject.getRotation());
 		sunObject.draw(camera, lightColor, sunObject.getPosition());
 		earthObject.draw(camera, lightColor, sunObject.getPosition());
 

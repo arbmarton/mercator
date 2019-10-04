@@ -11,7 +11,7 @@ class DisplayMap
 public:
 	DisplayMap();
 
-	void draw(const float earthRadius, const glm::vec3& earthToSun) const;
+	void draw(const float earthRadius, const glm::vec3& earthToSun, const glm::mat4& earthRotation) const;
 
 private:
 	constexpr static float topLeftX = 0.4f;
