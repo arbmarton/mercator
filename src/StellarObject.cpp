@@ -34,7 +34,7 @@ void StellarObject::draw(const Camera& camera, const glm::vec3& lightColor, cons
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	shader->setMat4("model", rotation * glm::translate(glm::mat4(1.0f), position));
+	shader->setMat4("model", glm::translate(glm::mat4(1.0f), position) * rotation);
 	shader->setMat4("view", camera.getLookAt());
 	shader->setMat4("projection", glm::perspective(glm::radians(camera.getFov()), ScreenDescriptor::WINDOW_WIDTH / float(ScreenDescriptor::WINDOW_HEIGHT), 0.1f, 1000.0f));
 	shader->setVec3("viewPos", camera.getPosition());

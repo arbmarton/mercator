@@ -36,6 +36,7 @@ void DisplayMap::draw(const float earthRadius, const glm::vec3& earthToSun, cons
 	shader->setVec2("upperLeftScreen", { x, y });
 	shader->setVec3("earthToSun", earthToSun);
 	shader->setFloat("earthRadius", earthRadius);
+	shader->setFloat("screenWidth", ScreenDescriptor::WINDOW_WIDTH);
 	shader->setMat4("rotation", earthRotation);
 
 	glBindVertexArray(VAO);

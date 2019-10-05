@@ -9,6 +9,7 @@ uniform vec2 upperLeftScreen;
 uniform vec3 earthToSun;
 uniform mat4 rotation;
 uniform float earthRadius;
+uniform float screenWidth;
 
 uniform float PI = 3.14159265358979323846264338327950f;
 
@@ -34,11 +35,11 @@ vec3 toDirectionVector(vec2 v)
 
 void main()
 {
-	float currentX = (gl_FragCoord.x - upperLeftScreen.x) / (800.0f - upperLeftScreen.x);
+	float currentX = (gl_FragCoord.x - upperLeftScreen.x) / (screenWidth - upperLeftScreen.x);
 	float currentY = gl_FragCoord.y / upperLeftScreen.y;
 
-	currentX = (1.0f - currentX) * 2 * PI;
-	currentY = currentY * PI - PI / 2;
+	currentX = (1.0f - currentX) * 2 * PI * earthRadius;
+	currentY = (currentY * PI - PI / 2) * earthRadius;
 
 	vec2 euler = projectToSphere(vec2(currentX, currentY));
 	vec4 normal = vec4(toDirectionVector(euler), 1.0f);

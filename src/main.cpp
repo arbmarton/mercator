@@ -123,17 +123,25 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
+	constexpr float earthAxisOffset = -23.5f;
+	constexpr float sunDistance = 100;
+	constexpr float rotationSpeed = 0.01f;
+	constexpr float earthRadius = 1.0f;
+	constexpr float sunRadius = 10.0f;
+
 	DisplayMap map;
 	
-	StellarObject earthObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "earth2048.bmp", GL_RGB, false);
-	StellarObject sunObject = StellarObject({ 0, 0, 0 }, 1, "sphere", "2k_sun.jpg", GL_RGB, true);
+	StellarObject earthObject = StellarObject({ 0, 0, 0 }, earthRadius, "sphere", "earth2048.bmp", GL_RGB, false);
+	StellarObject sunObject = StellarObject({ 0, 0, 0 }, sunRadius, "sphere", "2k_sun.jpg", GL_RGB, true);
 
-	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(-23.5f), { 0,0,1 });
+	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 });
 
 	const glm::vec3 lightColor{ 1,1,1 };
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+
+	const glm::mat4 rotationIncrement = glm::rotate(glm::mat4(1.0f), rotationSpeed, glm::normalize(glm::vec3(0, sinf(earthAxisOffset), cosf(earthAxisOffset))));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -142,7 +150,8 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		sunObject.getPosition() = { 50 * float(cos(glfwGetTime())), 100, 50 * float(sin(glfwGetTime())) };
+		sunObject.getPosition() = { sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) };
+		earthObject.getRotation() *= rotationIncrement;
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);

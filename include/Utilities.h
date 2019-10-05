@@ -35,8 +35,8 @@ private:
 
 struct ScreenDescriptor
 {
-	constexpr static int WINDOW_WIDTH = 800;
-	constexpr static int WINDOW_HEIGHT = 600;
+	constexpr static int WINDOW_WIDTH = 1024;
+	constexpr static int WINDOW_HEIGHT = 768;
 
 private:
 	ScreenDescriptor() = delete;
