@@ -15,7 +15,7 @@ public:
 	UVSphere(const float radiusArg, const glm::vec3& positionArg, const uint32_t latitudeDivision, const uint32_t longitudeDivision);
 	~UVSphere();
 
-	void draw(/*const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& viewPos, const glm::vec3& lightColor, const glm::vec3& lightPos*/) const;
+	void draw() const;
 
 	glm::vec3 getPosition() const
 	{
@@ -33,8 +33,6 @@ public:
 	}
 
 private:
-	const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
-
 	const float radius;
 	glm::vec3 position;
 

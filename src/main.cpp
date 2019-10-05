@@ -133,6 +133,7 @@ int main()
 	
 	StellarObject earthObject = StellarObject({ 0, 0, 0 }, earthRadius, "sphere", "earth2048.bmp", GL_RGB, false);
 	StellarObject sunObject = StellarObject({ 0, 0, 0 }, sunRadius, "sphere", "2k_sun.jpg", GL_RGB, true);
+	StellarObject starsObject = StellarObject(camera.getPosition(), sunDistance * 2, "sphere", "8k_stars_milky_way.jpg", GL_RGB, true);
 
 	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 });
 
@@ -152,6 +153,7 @@ int main()
 
 		sunObject.getPosition() = { sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) };
 		earthObject.getRotation() *= rotationIncrement;
+		starsObject.getPosition() = camera.getPosition();
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);
@@ -163,6 +165,7 @@ int main()
 		map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition(), earthObject.getRotation());
 		sunObject.draw(camera, lightColor, sunObject.getPosition());
 		earthObject.draw(camera, lightColor, sunObject.getPosition());
+		starsObject.draw(camera, lightColor, sunObject.getPosition());
 
 		// Upkeep
 		glfwSwapBuffers(window);

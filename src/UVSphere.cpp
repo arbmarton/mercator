@@ -82,20 +82,8 @@ UVSphere::~UVSphere()
 	delete shader;
 }
 
-void UVSphere::draw(/*const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& viewPos, const glm::vec3& lightColor, const glm::vec3& lightPos*/) const
+void UVSphere::draw() const
 {
-	//glUseProgram(shader->getID());
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, earthTexture);
-
-	//shader->setMat4("model", model);
-	//shader->setMat4("view", view);
-	//shader->setMat4("projection", projection);
-	//shader->setVec3("viewPos", viewPos);
-	//shader->setVec3("lightColor", lightColor);
-	//shader->setVec3("lightPos", lightPos);
-
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, GLsizei(vertexData.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
