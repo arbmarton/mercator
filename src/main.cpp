@@ -127,9 +127,9 @@ int main()
 
 	DisplayMap map;
 	
-	StellarObject earthObject = StellarObject({ 0, 0, 0 }, earthRadius, "sphere", "earth2048.bmp", GL_RGB, false);
-	StellarObject sunObject = StellarObject({ 0, 0, 0 }, sunRadius, "sphere", "2k_sun.jpg", GL_RGB, true);
-	StellarObject starsObject = StellarObject(camera.getPosition(), sunDistance * 2, "sphere", "8k_stars_milky_way.jpg", GL_RGB, true);
+	StellarObject earthObject = StellarObject({ 0, 0, 0 }, earthRadius, "litsphere", "earth2048.bmp", GL_RGB);
+	StellarObject sunObject = StellarObject({ 0, 0, 0 }, sunRadius, "unlitsphere", "2k_sun.jpg", GL_RGB);
+	StellarObject starsObject = StellarObject(camera.getPosition(), sunDistance * 2, "unlitsphere", "8k_stars_milky_way.jpg", GL_RGB);
 
 	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 });
 

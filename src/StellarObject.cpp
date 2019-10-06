@@ -7,12 +7,11 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 
-StellarObject::StellarObject(const glm::vec3& pos, const float radius, const std::string& shaderName, const std::string& textureName, const int textureFormat, const bool light)
+StellarObject::StellarObject(const glm::vec3& pos, const float radius, const std::string& shaderName, const std::string& textureName, const int textureFormat)
 	: sphere(new UVSphere(radius, pos, 100, 100))
 	, shader(new Shader(getShaderPath(shaderName + ".vs"), getShaderPath(shaderName + ".fs")))
 	, texture(loadTexture(textureName, textureFormat))
 	, position(pos)
-	, lightSource(light)
 {
 }
 
@@ -40,13 +39,6 @@ void StellarObject::draw(const Camera& camera, const glm::vec3& lightColor, cons
 	shader->setVec3("viewPos", camera.getPosition());
 	shader->setVec3("lightColor", lightColor);
 	shader->setVec3("lightPos", lightPos);
-	shader->setBool("lightSource", lightSource);
 	
-	//glm::rotate(glm::translate(glm::mat4(1.0f), uvsphere.getPosition()), glm::radians(-23.5f), { 0, 0, 1 }),
-	//	camera.getLookAt(),
-	//	createProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT, camera.getFov()),
-	//	camera.getPosition(),
-	//	lampColor,
-	//	lampPos
 	sphere->draw();
 }

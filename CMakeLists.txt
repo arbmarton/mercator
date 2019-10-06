@@ -11,12 +11,14 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/)
 
 set(VERTEX_SHADERS
 	shader/displaymap.vs
-	shader/sphere.vs
+	shader/litsphere.vs
+	shader/unlitsphere.vs
 )
 
 set(FRAGMENT_SHADERS
 	shader/displaymap.fs
-	shader/sphere.fs
+	shader/litsphere.fs
+	shader/unlitsphere.fs
 )
 
 set(THIRDPARTY_HEADERS

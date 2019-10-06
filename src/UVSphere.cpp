@@ -73,13 +73,6 @@ UVSphere::UVSphere(const float radiusArg, const glm::vec3& positionArg, const ui
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-
-	shader = new Shader(getShaderPath("sphere.vs"), getShaderPath("sphere.fs"));
-}
-
-UVSphere::~UVSphere()
-{
-	delete shader;
 }
 
 void UVSphere::draw() const

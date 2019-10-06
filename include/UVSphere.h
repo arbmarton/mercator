@@ -13,18 +13,13 @@ class UVSphere
 {
 public:
 	UVSphere(const float radiusArg, const glm::vec3& positionArg, const uint32_t latitudeDivision, const uint32_t longitudeDivision);
-	~UVSphere();
+	~UVSphere() = default;
 
 	void draw() const;
 
 	glm::vec3 getPosition() const
 	{
 		return position;
-	}
-
-	Shader* getShader() const
-	{
-		return shader;
 	}
 
 	float getRadius() const
@@ -41,8 +36,6 @@ private:
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec2> texcoords;
 	std::vector<uint32_t> indices;
-
-	Shader* shader{ nullptr };
 
 	GLuint VAO;
 	GLuint VBO;
