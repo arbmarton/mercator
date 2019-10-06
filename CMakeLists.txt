@@ -11,18 +11,12 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/glad/)
 
 set(VERTEX_SHADERS
 	shader/displaymap.vs
-	shader/lamp.vs
-	shader/lighting.vs
 	shader/sphere.vs
-	shader/test.vs
 )
 
 set(FRAGMENT_SHADERS
 	shader/displaymap.fs
-	shader/lamp.fs
-	shader/lighting.fs
 	shader/sphere.fs
-	shader/test.fs
 )
 
 set(THIRDPARTY_HEADERS
@@ -31,31 +25,19 @@ set(THIRDPARTY_HEADERS
 
 set(HEADER_FILES
 	include/Camera.h
-	include/Converter.h
-	include/Coordinate.h
 	include/DisplayMap.h
-	include/Earth.h
-	include/MercatorMath.h
 	include/Shader.h
-	include/Sphere.h
 	include/StellarObject.h
-	include/Sun.h
 	include/Utilities.h
 	include/UVSphere.h
 )
 
 set(SOURCE_FILES
 	src/Camera.cpp
-	src/Converter.cpp
-	src/Coordinate.cpp
 	src/DisplayMap.cpp
-	src/Earth.cpp
-	src/MercatorMath.cpp
 	src/main.cpp
 	src/Shader.cpp
-	src/Sphere.cpp
 	src/StellarObject.cpp
-	src/Sun.cpp
 	src/Utilities.cpp
 	src/UVSphere.cpp
 )
