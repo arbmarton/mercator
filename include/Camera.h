@@ -85,7 +85,7 @@ private:
 
 	float fov{ 45.0f };
 
-	float speed = 0.05f;
+	float speed{ 0.05f };
 
-	float sensitivity = 0.05f;
+	float sensitivity{ 0.05f };
 };

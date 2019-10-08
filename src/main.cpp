@@ -1,7 +1,4 @@
-#include "Utilities.h"
-#include "Shader.h"
 #include "Camera.h"
-#include "UVSphere.h"
 #include "DisplayMap.h"
 #include "StellarObject.h"
 
@@ -13,7 +10,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <vector>
 #include <iostream>
 
 
@@ -89,9 +85,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main()
 {
+	// Initial cursor state
 	CursorPosDescriptor::instance().lastX = ScreenDescriptor::WINDOW_WIDTH / 2;
 	CursorPosDescriptor::instance().lastY = ScreenDescriptor::WINDOW_HEIGHT / 2;
 
+	// Initialize GLFW and GLAD
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -117,29 +115,29 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	glEnable(GL_DEPTH_TEST);
-
+	// Set up constants
 	constexpr float earthAxisOffset = -23.5f;
 	constexpr float sunDistance = 100;
 	constexpr float rotationSpeed = 0.01f;
 	constexpr float earthRadius = 1.0f;
 	constexpr float sunRadius = 10.0f;
 
+	// Create rendered objects and related variables
 	DisplayMap map;
-	
-	StellarObject earthObject = StellarObject({ 0, 0, 0 }, earthRadius, "litsphere", "earth2048.bmp", GL_RGB);
-	StellarObject sunObject = StellarObject({ 0, 0, 0 }, sunRadius, "unlitsphere", "2k_sun.jpg", GL_RGB);
-	StellarObject starsObject = StellarObject(camera.getPosition(), sunDistance * 2, "unlitsphere", "8k_stars_milky_way.jpg", GL_RGB);
+	StellarObject earthObject({ 0, 0, 0 }, earthRadius, "litsphere", "earth2048.bmp", GL_RGB);
+	StellarObject sunObject({ 0, 0, 0 }, sunRadius, "unlitsphere", "2k_sun.jpg", GL_RGB);
+	StellarObject starsObject(camera.getPosition(), sunDistance * 2, "unlitsphere", "8k_stars_milky_way.jpg", GL_RGB);
 
-	earthObject.getRotation() = glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 });
-
-	const glm::vec3 lightColor{ 1,1,1 };
-
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
+	earthObject.setRotation(glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 }));
 
 	const glm::mat4 rotationIncrement = glm::rotate(glm::mat4(1.0f), rotationSpeed, glm::normalize(glm::vec3(0, sinf(earthAxisOffset), cosf(earthAxisOffset))));
 
+	const glm::vec3 lightColor{ 1, 1, 1 };
+
+	// Render loop setup
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
 		// Update
@@ -147,9 +145,9 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		sunObject.getPosition() = { sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) };
-		earthObject.getRotation() *= rotationIncrement;
-		starsObject.getPosition() = camera.getPosition();
+		sunObject.setPosition({ sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) });
+		earthObject.setRotation(earthObject.getRotation() * rotationIncrement);
+		starsObject.setPosition(camera.getPosition());
 
 		camera.setSpeed(deltaTime * 5.0f);
 		processInput(window, camera);

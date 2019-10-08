@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Camera.h"
-
 #include "glm.hpp"
 #include <glad/glad.h>
 
@@ -9,6 +7,7 @@
 
 class UVSphere;
 class Shader;
+class Camera;
 
 class StellarObject
 {
@@ -17,14 +16,22 @@ public:
 	StellarObject(const glm::vec3& pos, const float radius, const std::string& shaderName, const std::string& textureName, const int textureFormat);
 	~StellarObject();
 
-	glm::mat4& getRotation()
+	glm::mat4 getRotation() const
 	{
 		return rotation;
 	}
+	void setRotation(const glm::mat4& val)
+	{
+		rotation = val;
+	}
 
-	glm::vec3& getPosition()
+	glm::vec3 getPosition() const
 	{
 		return position;
+	}
+	void setPosition(const glm::vec3& pos)
+	{
+		position = pos;
 	}
 
 	float getRadius() const;

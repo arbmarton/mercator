@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "UVSphere.h"
 #include "Utilities.h"
+#include "Camera.h"
 
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"

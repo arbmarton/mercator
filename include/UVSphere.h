@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Utilities.h"
-
 #include "glm.hpp"
 #include <glad/glad.h>
 
@@ -32,9 +30,6 @@ private:
 	glm::vec3 position;
 
 	std::vector<float> vertexData;
-	std::vector<glm::vec3> positions;
-	std::vector<glm::vec3> normals;
-	std::vector<glm::vec2> texcoords;
 	std::vector<uint32_t> indices;
 
 	GLuint VAO;
