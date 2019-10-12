@@ -8,6 +8,7 @@ UVSphere::UVSphere(const float radiusArg, const glm::vec3& positionArg, const ui
     : radius(radiusArg)
     , position(positionArg)
 {
+	//http://www.songho.ca/opengl/gl_sphere.html
     const float radiusInverse = 1.0f / radius;
 
     for (uint32_t y = 0; y <= latitudeDivision; ++y)

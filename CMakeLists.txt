@@ -67,6 +67,8 @@ target_link_libraries(${PROJECT_NAME}
 					  ${CMAKE_CURRENT_LIST_DIR}/out/thirdparty/glad/$<CONFIG>/glad.lib
 )
 
+add_dependencies(${PROJECT_NAME} glfw)
+
 source_group("shaders" FILES ${VERTEX_SHADERS} ${FRAGMENT_SHADERS})
 source_group("thirdparty" FILES ${THIRDPARTY_HEADERS})
 				
