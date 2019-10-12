@@ -8,43 +8,43 @@
 
 inline std::ostream& operator<<(std::ostream& out, const glm::vec3& v)
 {
-	out << v.x << " " << v.y << " " << v.z << "\n";
-	return out;
+    out << v.x << " " << v.y << " " << v.z << "\n";
+    return out;
 }
 
 struct CursorPosDescriptor
 {
-	float lastX;
-	float lastY;
+    float lastX;
+    float lastY;
 
-	static CursorPosDescriptor& instance()
-	{
-		static CursorPosDescriptor* ptr{ nullptr };
+    static CursorPosDescriptor& instance()
+    {
+        static CursorPosDescriptor* ptr{ nullptr };
 
-		if (!ptr)
-		{
-			ptr = new CursorPosDescriptor();
-		}
+        if (!ptr)
+        {
+            ptr = new CursorPosDescriptor();
+        }
 
-		return *ptr;
-	}
+        return *ptr;
+    }
 
 private:
-	CursorPosDescriptor() = default;
+    CursorPosDescriptor() = default;
 };
 
 struct ScreenDescriptor
 {
-	constexpr static int WINDOW_WIDTH = 1024;
-	constexpr static int WINDOW_HEIGHT = 768;
+    constexpr static int WINDOW_WIDTH = 1024;
+    constexpr static int WINDOW_HEIGHT = 768;
 
 private:
-	ScreenDescriptor() = delete;
-	ScreenDescriptor(const ScreenDescriptor& rhs) = delete;
-	ScreenDescriptor(const ScreenDescriptor&& rhs) = delete;
+    ScreenDescriptor() = delete;
+    ScreenDescriptor(const ScreenDescriptor& rhs) = delete;
+    ScreenDescriptor(const ScreenDescriptor&& rhs) = delete;
 
-	ScreenDescriptor& operator=(const ScreenDescriptor& rhs) = delete;
-	ScreenDescriptor& operator=(const ScreenDescriptor&& rhs) = delete;
+    ScreenDescriptor& operator=(const ScreenDescriptor& rhs) = delete;
+    ScreenDescriptor& operator=(const ScreenDescriptor&& rhs) = delete;
 };
 
 std::filesystem::path getShaderFolderPath();

@@ -18,153 +18,153 @@ Camera camera;
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height)
 {
-	glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow* window, Camera& cam)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		cam.moveForward();
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		cam.moveBackward();
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		cam.moveLeft();
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		cam.moveRight();
-	}
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cam.moveForward();
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cam.moveBackward();
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        cam.moveLeft();
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        cam.moveRight();
+    }
 }
 
 void mouse_callback(GLFWwindow* window, const double xpos, const double ypos)
 {
-	if (firstMouse)
-	{
-		CursorPosDescriptor::instance().lastX = float(xpos);
-		CursorPosDescriptor::instance().lastY = float(ypos);
+    if (firstMouse)
+    {
+        CursorPosDescriptor::instance().lastX = float(xpos);
+        CursorPosDescriptor::instance().lastY = float(ypos);
 
-		firstMouse = false;
-	}
+        firstMouse = false;
+    }
 
-	const float xOffset = float(xpos) - CursorPosDescriptor::instance().lastX;
-	const float yOffset = CursorPosDescriptor::instance().lastY - float(ypos);
-	CursorPosDescriptor::instance().lastX = float(xpos);
-	CursorPosDescriptor::instance().lastY = float(ypos);
+    const float xOffset = float(xpos) - CursorPosDescriptor::instance().lastX;
+    const float yOffset = CursorPosDescriptor::instance().lastY - float(ypos);
+    CursorPosDescriptor::instance().lastX = float(xpos);
+    CursorPosDescriptor::instance().lastY = float(ypos);
 
 
-	camera.processMovement(xOffset, yOffset);
+    camera.processMovement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	constexpr float maxFov = 90.0f;
-	constexpr float minFov = 1.0f;
+    constexpr float maxFov = 90.0f;
+    constexpr float minFov = 1.0f;
 
-	if (camera.getFov() >= minFov && camera.getFov() <= maxFov)
-	{
-		camera.setFov(camera.getFov() - float(yoffset));
-	}
-	if (camera.getFov() <= minFov)
-	{
-		camera.setFov(minFov);
-	}
-	if (camera.getFov() >= maxFov)
-	{
-		camera.setFov(maxFov);
-	}
+    if (camera.getFov() >= minFov && camera.getFov() <= maxFov)
+    {
+        camera.setFov(camera.getFov() - float(yoffset));
+    }
+    if (camera.getFov() <= minFov)
+    {
+        camera.setFov(minFov);
+    }
+    if (camera.getFov() >= maxFov)
+    {
+        camera.setFov(maxFov);
+    }
 }
 
 int main()
 {
-	// Initial cursor state
-	CursorPosDescriptor::instance().lastX = ScreenDescriptor::WINDOW_WIDTH / 2;
-	CursorPosDescriptor::instance().lastY = ScreenDescriptor::WINDOW_HEIGHT / 2;
+    // Initial cursor state
+    CursorPosDescriptor::instance().lastX = ScreenDescriptor::WINDOW_WIDTH / 2;
+    CursorPosDescriptor::instance().lastY = ScreenDescriptor::WINDOW_HEIGHT / 2;
 
-	// Initialize GLFW and GLAD
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
-	GLFWwindow* window = glfwCreateWindow(ScreenDescriptor::WINDOW_WIDTH, ScreenDescriptor::WINDOW_HEIGHT, "Lit Earth", nullptr, nullptr);
-	if (window == nullptr)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // Initialize GLFW and GLAD
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
+    GLFWwindow* window = glfwCreateWindow(ScreenDescriptor::WINDOW_WIDTH, ScreenDescriptor::WINDOW_HEIGHT, "Lit Earth", nullptr, nullptr);
+    if (window == nullptr)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
 
-	// Set up constants
-	constexpr float earthAxisOffset = -23.5f;
-	constexpr float sunDistance = 100;
-	constexpr float rotationSpeed = 0.01f;
-	constexpr float earthRadius = 1.0f;
-	constexpr float sunRadius = 10.0f;
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
-	// Create rendered objects and related variables
-	DisplayMap map;
-	StellarObject earthObject({ 0, 0, 0 }, earthRadius, "litsphere", "earth2048.bmp", GL_RGB);
-	StellarObject sunObject({ 0, 0, 0 }, sunRadius, "unlitsphere", "2k_sun.jpg", GL_RGB);
-	StellarObject starsObject(camera.getPosition(), sunDistance * 2, "unlitsphere", "8k_stars_milky_way.jpg", GL_RGB);
+    // Set up constants
+    constexpr float earthAxisOffset = -23.5f;
+    constexpr float sunDistance = 100;
+    constexpr float rotationSpeed = 0.01f;
+    constexpr float earthRadius = 1.0f;
+    constexpr float sunRadius = 10.0f;
 
-	earthObject.setRotation(glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 }));
+    // Create rendered objects and related variables
+    DisplayMap map;
+    StellarObject earthObject({ 0, 0, 0 }, earthRadius, "litsphere", "earth2048.bmp", GL_RGB);
+    StellarObject sunObject({ 0, 0, 0 }, sunRadius, "unlitsphere", "2k_sun.jpg", GL_RGB);
+    StellarObject starsObject(camera.getPosition(), sunDistance * 2, "unlitsphere", "8k_stars_milky_way.jpg", GL_RGB);
 
-	const glm::mat4 rotationIncrement = glm::rotate(glm::mat4(1.0f), rotationSpeed, glm::normalize(glm::vec3(0, sinf(earthAxisOffset), cosf(earthAxisOffset))));
+    earthObject.setRotation(glm::rotate(glm::mat4(1.0f), glm::radians(earthAxisOffset), { 0, 0, 1 }));
 
-	const glm::vec3 lightColor{ 1, 1, 1 };
+    const glm::mat4 rotationIncrement = glm::rotate(glm::mat4(1.0f), rotationSpeed, glm::normalize(glm::vec3(0, sinf(earthAxisOffset), cosf(earthAxisOffset))));
 
-	// Render loop setup
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
-	glEnable(GL_DEPTH_TEST);
-	while (!glfwWindowShouldClose(window))
-	{
-		// Update
-		const float currentFrame = float(glfwGetTime());
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+    const glm::vec3 lightColor{ 1, 1, 1 };
 
-		sunObject.setPosition({ sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) });
-		earthObject.setRotation(earthObject.getRotation() * rotationIncrement);
-		starsObject.setPosition(camera.getPosition());
+    // Render loop setup
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+    glEnable(GL_DEPTH_TEST);
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update
+        const float currentFrame = float(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
-		camera.setSpeed(deltaTime * 5.0f);
-		processInput(window, camera);
+        sunObject.setPosition({ sunDistance * cosf(float(glfwGetTime())), 0, sunDistance * sinf(float(glfwGetTime())) });
+        earthObject.setRotation(earthObject.getRotation() * rotationIncrement);
+        starsObject.setPosition(camera.getPosition());
 
-		// Draw
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        camera.setSpeed(deltaTime * 5.0f);
+        processInput(window, camera);
 
-		map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition(), earthObject.getRotation());
-		sunObject.draw(camera, lightColor, sunObject.getPosition());
-		earthObject.draw(camera, lightColor, sunObject.getPosition());
-		starsObject.draw(camera, lightColor, sunObject.getPosition());
+        // Draw
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Upkeep
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+        map.draw(earthObject.getRadius(), sunObject.getPosition() - earthObject.getPosition(), earthObject.getRotation());
+        sunObject.draw(camera, lightColor, sunObject.getPosition());
+        earthObject.draw(camera, lightColor, sunObject.getPosition());
+        starsObject.draw(camera, lightColor, sunObject.getPosition());
 
-	glfwTerminate();
+        // Upkeep
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
 }

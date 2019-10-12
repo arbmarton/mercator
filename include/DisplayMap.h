@@ -9,34 +9,29 @@ class Shader;
 class DisplayMap
 {
 public:
-	DisplayMap();
+    DisplayMap();
 
-	void draw(const float earthRadius, const glm::vec3& earthToSun, const glm::mat4& earthRotation) const;
+    void draw(const float earthRadius, const glm::vec3& earthToSun, const glm::mat4& earthRotation) const;
 
 private:
-	constexpr static float topLeftX = 0.4f;
-	constexpr static float topLeftY = -0.4f;
+    constexpr static float topLeftX = 0.4f;
+    constexpr static float topLeftY = -0.4f;
 
-	// screen space coordinates
-	constexpr static float displayVertices[20] =
-	{
-		topLeftX, topLeftY, -1.0f, 0.0f, 1.0f, // top left
-		topLeftX, -1.0f, -1.0f, 0.0f, 0.0f, // bottom left
-		1.0f, -1.0f, -1.0f, 1.0f, 0.0f, // bottom right
-		1.0f, topLeftY, -1.0f, 1.0f, 1.0f // top right
-	};
+    // screen space coordinates
+    constexpr static float displayVertices[20] = {
+        topLeftX, topLeftY, -1.0f, 0.0f, 1.0f,  // top left
+        topLeftX, -1.0f,    -1.0f, 0.0f, 0.0f,  // bottom left
+        1.0f,     -1.0f,    -1.0f, 1.0f, 0.0f,  // bottom right
+        1.0f,     topLeftY, -1.0f, 1.0f, 1.0f   // top right
+    };
 
-	constexpr static int displayIndices[6] =
-	{
-		3, 2, 0,
-		2, 1, 0
-	};
+    constexpr static int displayIndices[6] = { 3, 2, 0, 2, 1, 0 };
 
-	const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
+    const GLuint earthTexture = loadTexture("earth2048.bmp", GL_RGB);
 
-	Shader* shader{ nullptr };
+    Shader* shader{ nullptr };
 
-	GLuint VAO;
-	GLuint VBO;
-	GLuint EBO;
+    GLuint VAO;
+    GLuint VBO;
+    GLuint EBO;
 };

@@ -10,29 +10,29 @@ class Shader;
 class UVSphere
 {
 public:
-	UVSphere(const float radiusArg, const glm::vec3& positionArg, const uint32_t latitudeDivision, const uint32_t longitudeDivision);
-	~UVSphere() = default;
+    UVSphere(const float radiusArg, const glm::vec3& positionArg, const uint32_t latitudeDivision, const uint32_t longitudeDivision);
+    ~UVSphere() = default;
 
-	void draw() const;
+    void draw() const;
 
-	glm::vec3 getPosition() const
-	{
-		return position;
-	}
+    glm::vec3 getPosition() const
+    {
+        return position;
+    }
 
-	float getRadius() const
-	{
-		return radius;
-	}
+    float getRadius() const
+    {
+        return radius;
+    }
 
 private:
-	const float radius;
-	glm::vec3 position;
+    const float radius;
+    glm::vec3 position;
 
-	std::vector<float> vertexData;
-	std::vector<uint32_t> indices;
+    std::vector<float> vertexData;
+    std::vector<uint32_t> indices;
 
-	GLuint VAO;
-	GLuint VBO;
-	GLuint EBO;
+    GLuint VAO;
+    GLuint VBO;
+    GLuint EBO;
 };
